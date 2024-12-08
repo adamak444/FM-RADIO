@@ -29,6 +29,6 @@ Tento projekt se zaměřuje na stavbu FM rádia s displejem, který zobrazuje r�
 - **RDA5807**: Pro ovládání FM rádia.
 
 ## Kontakt
-[email](fialaadamak2006@gmail.com)
+fialaadamak2006@gmail.com
 
 ![celek v6](https://github.com/user-attachments/assets/b35fa04c-9619-4d42-a303-4d095582e08e)
