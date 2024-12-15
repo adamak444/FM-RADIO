@@ -17,7 +17,7 @@ const int buttonPin = 5; // Pin pro tlačítko
 bool buttonPressed = false;
 
 const int encoderThreshold = 4; // Hranice kroků encoderu pro změnu
-long lastPosition = 0; // Poslední zaznamenaná pozice encoderu
+long lastPosition = 0; // Poslední zaznamenaná pozice
 
 void setup() {
   if (!display.begin(0x3C, true)) { // Adresa displeje 0x3C
@@ -28,6 +28,7 @@ void setup() {
 
   // Inicializace tlačítka
   pinMode(buttonPin, INPUT_PULLUP);
+  boot();
 }
 
 void loop() {
@@ -52,6 +53,136 @@ void loop() {
     buttonPressed = false; // Resetuje stav po uvolnění tlačítka
   }
 }
+
+void boot() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setCursor((SCREEN_WIDTH - 30) / 2, 10);
+  display.setTextColor(SH110X_WHITE);
+  display.print("BOOT");
+  display.display();
+  delay(1000);
+  radio();
+}
+
+void radio() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(90, 0);
+  display.print("16:15");
+
+  display.setTextSize(2);
+  display.setCursor(10, 15);
+  display.print("Radio 1");
+
+  display.setTextSize(1);
+  display.setCursor(45, 40);
+  display.print("115 FM");
+
+  display.drawLine(0, 50, SCREEN_WIDTH, 50, SH110X_WHITE);
+
+  display.setTextSize(1);
+  display.setCursor(45, 54);
+  display.print("Menu");
+
+  display.setCursor(100, 54);
+  display.print("Safe");
+
+  display.display();
+}
+
+
+void settime() {
+  int minutes = 0;
+  int hours = 0;
+
+  // Nastavení minut
+  while (true) {
+    long newPosition = myEnc.read();
+
+    // Kontrola směru otáčení
+    if (newPosition != lastPosition) {
+      int delta = newPosition - lastPosition; // Zjistit, o kolik se změnila pozice
+
+      // Pokud se změnila pozice, zaktualizuj hodnotu minut
+      if (delta > 0) { // Otočeno doprava
+        if (minutes < 59) {
+          minutes++;
+        }
+      } else if (delta < 0) { // Otočeno doleva
+        if (minutes > 0) {
+          minutes--;
+        }
+      }
+
+      lastPosition = newPosition; // Uložení nové pozice
+
+      // Aktualizace displeje
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(SH110X_WHITE);
+      display.setCursor(20, 0);
+      display.println("SET MINUTES:");
+      display.setCursor(20, 50);
+      display.println(minutes);
+      display.display();
+    }
+
+    // Kontrola tlačítka
+    if (digitalRead(buttonPin) == LOW) { // Tlačítko je stisknuto
+      delay(200); // Debounce delay
+      while (digitalRead(buttonPin) == LOW); // Čekej, až se tlačítko uvolní
+      break; // Když uživatel potvrdí, ukončíme nastavení minut
+    }
+  }
+  
+    // Nastavení hodin
+  while (true) {
+    long newPosition = myEnc.read();
+
+    // Kontrola směru otáčení
+    if (newPosition != lastPosition) {
+      int delta = newPosition - lastPosition; // Zjistit, o kolik se změnila pozice
+
+      // Pokud se změnila pozice, zaktualizuj hodnotu hodin
+      if (delta > 0) { // Otočeno doprava
+        if (hours < 23) {
+          hours++;
+        }
+      } else if (delta < 0) { // Otočeno doleva
+        if (hours > 0) {
+          hours--;
+        }
+      }
+
+      lastPosition = newPosition; // Uložení nové pozice
+
+      // Aktualizace displeje
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(SH110X_WHITE);
+      display.setCursor(20, 0);
+      display.println("SET HOURS:");
+      display.setCursor(20, 50);
+      display.println(hours);
+      display.display();
+    }
+
+    // Kontrola tlačítka
+    if (digitalRead(buttonPin) == LOW) { // Tlačítko je stisknuto
+      delay(200); // Debounce delay
+      while (digitalRead(buttonPin) == LOW); // Čekej, až se tlačítko uvolní
+      //rtc.setTime(hours, minutes, 0); // Nastaví čas do RTC
+      break; // Ukončíme nastavení hodin
+    }
+  }
+}
+
+
+
+
+
 
 void drawMenu() {
   display.clearDisplay();
@@ -80,26 +211,22 @@ void executeSelectedItem() {
 
   switch (selectedItem) {
     case 0:
-      display.print("Spouštím Radio...");
+      radio();
       break;
     case 1:
-      display.print("Otevírám Timer...");
+      // Timer
       break;
     case 2:
-      display.print("Spouštím Alarm...");
+      // Alarm
       break;
     case 3:
-      display.print("Equalizer...");
+      // Equalizer
       break;
     case 4:
-      display.print("Set Time...");
+      settime();
       break;
     case 5:
-      display.print("Info...");
+      // Info
       break;
   }
-
-  display.display();
-  delay(1000); // Zobrazí zprávu po dobu 1 sekundy
-  drawMenu(); // Vrácí zpět do menu
 }

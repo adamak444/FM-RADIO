@@ -8,12 +8,28 @@ RDA5807 rx;
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET    -1
+
+#define MAX_DELAY_RDS 80  //  polling method
+#define MAX_DELAY_STATUS 5000
+#define MAX_DELAY_SHOW_RDS 80
+long rds_elapsed = millis();
+long status_elapsed = millis();
+
+uint8_t showrRdsInfo = 3;  // Default: show RDS time.
+
 Adafruit_SH1106G display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+char* stationName;
+
 void setup() {
+Serial.begin(9600);
+Serial.println("starting...");
 rx.setup();
 rx.setVolume(1);
-//rx.setRDS(true);
+rx.setRDS(true);
+rx.setRdsFifo(true);
+rx.setLnaPortSel(3);
+rx.setAFC(true);
 delay(500);
 
 rx.setFrequency(9190);
@@ -25,11 +41,34 @@ display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SH110X_WHITE);
   display.setCursor((SCREEN_WIDTH - 30) / 2, 0);  // Zarovnání do středu
-  display.print(rx.getFrequency());
+  display.print(" ");
 display.display();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  display.clearDisplay();
+drawStationInfo();
+display.display();
+
+Serial.print("name: ");
+Serial.println(stationName);
+delay(500);
+}
+
+void drawStationInfo() {
+if (rx.getRdsReady()) {
+    if (rx.hasRdsInfo()) {
+      stationName = rx.getRdsStationName();
+    }
+  }
+
+
+  display.setTextSize(2);
+  display.setCursor((SCREEN_WIDTH - 60) / 2, 20);  // Zarovnání do středu
+  display.print(stationName);
+
+  display.setTextSize(1);
+  display.setCursor((SCREEN_WIDTH - 45) / 2, 54);
+  display.print(rx.getFrequency());
 
 }

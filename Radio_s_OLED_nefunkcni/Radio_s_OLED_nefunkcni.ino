@@ -1,4 +1,5 @@
 #include <Adafruit_GFX.h>
+#include <Wire.h>
 #include <Adafruit_SH110X.h>
 #include <RDA5807.h>
 
