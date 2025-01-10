@@ -1,6 +1,10 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
 #include <Encoder.h>
+#include <RDA5807.h>
+#include <Rtc_Pcf8563.h>
+#include "LowPower.h"
+
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -219,9 +223,9 @@ void setTimer() {
       int delta = newPosition - lastPosition;
 
       // Aktualizace timeru (po 5 minutách)
-      if (delta > 0 && timerMinutes < 59) {
+      if (delta > 0) {
         timerMinutes += 5; // Zvětšení po 5 minutách
-      } else if (delta < 0 && timerMinutes > 0) {
+      } else if (delta < 0) {
         timerMinutes -= 5; // Snížení po 5 minutách
       }
 

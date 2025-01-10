@@ -5,7 +5,7 @@
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-#define OLED_RESET    -1
+#define OLED_RESET -1
 Adafruit_SH1106G display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #define MAX_DELAY_RDS 80  //  polling method
@@ -21,7 +21,8 @@ RDA5807 rx;
 char* stationName;
 
 void setup() {
-
+  Serial.begin(9600);
+  Serial.println("starting");
   rx.setup();
 
   rx.setRDS(true);  // Turns RDS on
@@ -47,17 +48,17 @@ void setup() {
   display.display();
 
   delay(2000);
+  Serial.println("DONE");
 }
 
 void loop() {
-display.clearDisplay();
-drawStationInfo();
-display.display();
-
+  display.clearDisplay();
+  drawStationInfo();
+  display.display();
 }
 
 void drawStationInfo() {
-if (rx.getRdsReady()) {
+  if (rx.getRdsReady()) {
     if (rx.hasRdsInfo()) {
       stationName = rx.getRdsStationName();
     }
