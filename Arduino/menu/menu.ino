@@ -2,8 +2,8 @@
 #include <Adafruit_SH110X.h>
 #include <Encoder.h>
 #include <RDA5807.h>
-#include <Rtc_Pcf8563.h>
-#include "LowPower.h"
+//#include <Rtc_Pcf8563.h>
+//#include "LowPower.h"
 
 
 #define SCREEN_WIDTH 128
@@ -15,8 +15,8 @@ const int numItems = 6; // Počet položek v menu
 String menuItems[numItems] = {"Radio", "Timer", "Alarm", "Equalizer", "Set Time", "Safe Station"};
 int selectedItem = 0;
 
-Encoder myEnc(4, 3); // Pin 4 jako DT, pin 3 jako CLK
-const int buttonPin = 5; // Pin pro tlačítko
+Encoder myEnc(4, 5); // Pin 4 jako DT, pin 3 jako CLK
+const int buttonPin = 18; // Pin pro tlačítko
 bool buttonPressed = false;
 
 const int encoderThreshold = 4;

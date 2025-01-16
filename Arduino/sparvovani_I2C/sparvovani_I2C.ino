@@ -7,7 +7,6 @@ RDA5807 rx;
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-#define OLED_RESET -1
 
 #define MAX_DELAY_RDS 80  //  polling method
 #define MAX_DELAY_STATUS 5000
@@ -17,7 +16,7 @@ long status_elapsed = millis();
 
 uint8_t showrRdsInfo = 3;  // Default: show RDS time.
 
-Adafruit_SH1106G display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
 char* stationName;
 
@@ -26,12 +25,14 @@ void setup() {
   Serial.println("starting...");
   rx.setup();
   rx.setVolume(1);
-  //rx.setRDS(true);
-  //rx.setRdsFifo(true);
+  rx.setRDS(true);
+  rx.setRdsFifo(true);
   rx.setLnaPortSel(3);
   rx.setAFC(true);
   delay(500);
   rx.setFrequency(8950);
+
+
   display.begin(0x3C, true);
   display.clearDisplay();
   display.setTextSize(1);
